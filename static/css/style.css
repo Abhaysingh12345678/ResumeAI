@@ -28,7 +28,7 @@ html { scroll-behavior: smooth; }
 
 body {
   font-family: var(--font);
-  background: var(--bg);
+  background: rgb(5, 36, 66);
   color: var(--text);
   min-height: 100vh;
   display: flex;
