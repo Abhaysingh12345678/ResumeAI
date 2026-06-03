@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% block title %}Manage Jobs{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Manage Job Descriptions</h1>
+      <p class="page-sub">{{ jobs|length }} active openings</p>
+    </div>
+    <button onclick="toggleForm()" class="btn-primary">+ Add New Job</button>
+  </div>
+
+  <!-- Add Job Form -->
+  <div id="addJobForm" class="form-card" style="display:none;">
+    <h2>Add Job Description</h2>
+    <form method="POST" action="{{ url_for('admin_jobs') }}">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Job Title *</label>
+          <input type="text" name="title" placeholder="e.g. Python Backend Developer" required>
+        </div>
+        <div class="form-group">
+          <label>Company</label>
+          <input type="text" name="company" placeholder="e.g. TechCorp India">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Job Description *</label>
+        <textarea name="description" rows="4" placeholder="Describe responsibilities, requirements, experience..." required></textarea>
+      </div>
+      <div class="form-group">
+        <label>Required Skills (comma separated)</label>
+        <input type="text" name="required_skills" placeholder="Python, Flask, SQL, Git, Docker">
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Save Job</button>
+        <button type="button" onclick="toggleForm()" class="btn-ghost">Cancel</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Jobs Table -->
+  {% if jobs %}
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr><th>#</th><th>Title</th><th>Company</th><th>Required Skills</th><th>Created</th><th>Actions</th></tr>
+      </thead>
+      <tbody>
+        {% for job in jobs %}
+        <tr>
+          <td>{{ loop.index }}</td>
+          <td><strong>{{ job.title }}</strong></td>
+          <td>{{ job.company or '—' }}</td>
+          <td>
+            <div class="skill-tags-sm">
+              {% set skills = job.required_skills | from_json if job.required_skills else [] %}
+              {% for s in skills[:4] %}
+                <span class="skill-tag-sm">{{ s }}</span>
+              {% endfor %}
+              {% if skills|length > 4 %}
+                <span class="skill-tag-sm">+{{ skills|length - 4 }}</span>
+              {% endif %}
+            </div>
+          </td>
+          <td>{{ job.created_at[:10] }}</td>
+          <td>
+            <form method="POST" action="{{ url_for('admin_delete_job', job_id=job.id) }}"
+                  onsubmit="return confirm('Delete this job?')">
+              <button type="submit" class="btn-danger-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state"><div class="empty-icon">💼</div><p>No jobs added yet. Click "Add New Job".</p></div>
+  {% endif %}
+</div>
+<script>
+function toggleForm() {
+  const f = document.getElementById('addJobForm');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
+</script>
+{% endblock %}

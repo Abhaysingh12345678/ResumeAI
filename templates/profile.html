@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}My Profile{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <div class="page-header">
+    <h1>My Profile</h1>
+    <a href="{{ url_for('user_dashboard') }}" class="btn-ghost">← Dashboard</a>
+  </div>
+
+  <div class="profile-card">
+    <div class="profile-avatar">{{ user.name[0].upper() }}</div>
+    <div class="profile-role-badge">{{ user.role.upper() }}</div>
+    <form method="POST" action="{{ url_for('profile') }}" class="profile-form">
+      <div class="form-row">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" name="name" value="{{ user.name }}" required>
+        </div>
+        <div class="form-group">
+          <label>Email (read-only)</label>
+          <input type="email" value="{{ user.email }}" readonly class="input-readonly">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Phone Number</label>
+        <input type="text" name="phone" value="{{ user.phone or '' }}" placeholder="+91 98765 43210">
+      </div>
+      <div class="form-group">
+        <label>Bio / About</label>
+        <textarea name="bio" rows="4" placeholder="Tell us about yourself, your skills, goals...">{{ user.bio or '' }}</textarea>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-primary">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

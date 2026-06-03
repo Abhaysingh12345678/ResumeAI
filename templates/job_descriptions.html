@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Job Descriptions{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Job Openings</h1>
+      <p class="page-sub">Browse and match your resume to available positions</p>
+    </div>
+    <a href="{{ url_for('user_dashboard') }}" class="btn-ghost">← Dashboard</a>
+  </div>
+
+  {% if not resumes %}
+  <div class="alert-info">
+    ⚠️ You have no resumes uploaded yet.
+    <a href="{{ url_for('user_dashboard') }}">Upload one first →</a>
+  </div>
+  {% endif %}
+
+  <div class="jobs-detail-grid">
+    {% for job in jobs %}
+    {% set req_skills = job.required_skills | from_json if job.required_skills else [] %}
+    <div class="job-detail-card">
+      <div class="jd-header">
+        <div>
+          <h2 class="jd-title">{{ job.title }}</h2>
+          <div class="jd-company">🏢 {{ job.company or 'Company' }}</div>
+        </div>
+        <span class="job-badge">Open</span>
+      </div>
+      <p class="jd-description">{{ job.description }}</p>
+      <div class="jd-skills">
+        <div class="jd-skills-label">Required Skills:</div>
+        <div class="skill-tags">
+          {% for s in req_skills %}
+            <span class="skill-tag req-skill">{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% if resumes %}
+      <div class="jd-match-section">
+        <div class="jd-match-label">Match with your resume:</div>
+        <div class="resume-match-options">
+          {% for resume in resumes %}
+          <a href="{{ url_for('match_resume', resume_id=resume.id, job_id=job.id) }}"
+             class="btn-primary-sm">
+            📄 {{ resume.filename[:25] }}{% if resume.filename|length > 25 %}…{% endif %}
+          </a>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      <div class="jd-date">Posted: {{ job.created_at[:10] }}</div>
+    </div>
+    {% else %}
+    <div class="empty-state"><div class="empty-icon">💼</div><p>No jobs available yet.</p></div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

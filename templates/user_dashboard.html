@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}My Dashboard{% endblock %}
+{% block content %}
+
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Welcome, {{ session.get('user_name') }} 👋</h1>
+      <p class="page-sub">Manage your resumes and track job matches</p>
+    </div>
+    <label for="resumeUploadInput" class="btn-primary" style="cursor:pointer;">+ Upload Resume</label>
+  </div>
+
+  <!-- Stats row -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">📄</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ resumes|length }}</div>
+        <div class="stat-label">Resumes Uploaded</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💼</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ jobs|length }}</div>
+        <div class="stat-label">Jobs Available</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ matches|length }}</div>
+        <div class="stat-label">Match Results</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">⭐</div>
+      <div class="stat-body">
+        {% if matches %}
+          <div class="stat-value">{{ "%.0f"|format(matches[0].match_score) }}%</div>
+          <div class="stat-label">Best Match Score</div>
+        {% else %}
+          <div class="stat-value">—</div>
+          <div class="stat-label">Best Match Score</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <!-- Hidden upload form -->
+  <form id="uploadForm" method="POST" action="{{ url_for('upload_resume') }}" enctype="multipart/form-data" style="display:none;">
+    <input type="file" id="resumeUploadInput" name="resume" accept=".pdf,.doc,.docx,.txt"
+           onchange="document.getElementById('uploadForm').submit()">
+  </form>
+
+  <div class="dash-grid">
+    <!-- Resumes Section -->
+    <div class="dash-section">
+      <h2 class="section-heading">My Resumes</h2>
+      {% if resumes %}
+        <div class="resume-list">
+          {% for resume in resumes %}
+          <div class="resume-item">
+            <div class="resume-icon">📄</div>
+            <div class="resume-info">
+              <div class="resume-name">{{ resume.filename }}</div>
+              <div class="resume-date">{{ resume.uploaded_at[:10] }}</div>
+              {% set skills = resume.skills | from_json if resume.skills else [] %}
+              <div class="skill-tags">
+                {% for skill in skills[:6] %}
+                  <span class="skill-tag">{{ skill }}</span>
+                {% endfor %}
+                {% if skills|length > 6 %}
+                  <span class="skill-tag skill-more">+{{ skills|length - 6 }}</span>
+                {% endif %}
+              </div>
+            </div>
+            <div class="resume-actions">
+              {% for job in jobs %}
+              <a href="{{ url_for('match_resume', resume_id=resume.id, job_id=job.id) }}"
+                 class="btn-match-sm" title="Match with {{ job.title }}">
+                Match vs {{ job.title[:15] }}…
+              </a>
+              {% endfor %}
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">📭</div>
+          <p>No resumes uploaded yet. Click <strong>Upload Resume</strong> to get started.</p>
+        </div>
+      {% endif %}
+    </div>
+
+    <!-- Recent Matches -->
+    <div class="dash-section">
+      <h2 class="section-heading">Recent Matches
+        <a href="{{ url_for('view_match_results') }}" class="view-all">View All →</a>
+      </h2>
+      {% if matches %}
+        {% for match in matches[:5] %}
+        <div class="match-item">
+          <div class="match-job">
+            <div class="match-title">{{ match.job_title }}</div>
+          </div>
+          <div class="score-ring-sm {% if match.match_score >= 70 %}score-high{% elif match.match_score >= 40 %}score-mid{% else %}score-low{% endif %}">
+            {{ "%.0f"|format(match.match_score) }}%
+          </div>
+        </div>
+        {% endfor %}
+      {% else %}
+        <div class="empty-state">
+          <div class="empty-icon">🎯</div>
+          <p>No matches yet. Upload a resume and click a match button.</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Jobs list -->
+  <div class="dash-section full-width">
+    <h2 class="section-heading">Available Jobs
+      <a href="{{ url_for('job_descriptions') }}" class="view-all">View All →</a>
+    </h2>
+    <div class="jobs-grid">
+      {% for job in jobs %}
+      <div class="job-card">
+        <div class="job-header">
+          <div>
+            <div class="job-title">{{ job.title }}</div>
+            <div class="job-company">{{ job.company }}</div>
+          </div>
+          <span class="job-badge">Open</span>
+        </div>
+        <p class="job-desc">{{ job.description[:120] }}…</p>
+        {% set req_skills = job.required_skills | from_json if job.required_skills else [] %}
+        <div class="skill-tags">
+          {% for skill in req_skills[:5] %}
+            <span class="skill-tag req-skill">{{ skill }}</span>
+          {% endfor %}
+        </div>
+        <div class="job-footer">
+          {% if resumes %}
+            <a href="{{ url_for('match_resume', resume_id=resumes[0].id, job_id=job.id) }}" class="btn-primary-sm">
+              Quick Match →
+            </a>
+          {% else %}
+            <span class="text-muted">Upload resume first</span>
+          {% endif %}
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// JSON filter polyfill for templates
+</script>
+{% endblock %}

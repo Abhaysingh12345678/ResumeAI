@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}My Match Results{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>My Match Results</h1>
+      <p class="page-sub">Your resume-job compatibility scores</p>
+    </div>
+    <a href="{{ url_for('user_dashboard') }}" class="btn-ghost">← Dashboard</a>
+  </div>
+
+  {% if matches %}
+  <div class="matches-grid">
+    {% for match in matches %}
+    {% set details = match.details | from_json if match.details else {} %}
+    <div class="match-card">
+      <div class="match-card-header">
+        <div>
+          <div class="match-card-title">{{ match.job_title }}</div>
+          <div class="match-card-company">{{ match.company or '' }}</div>
+          <div class="match-card-file">📄 {{ match.resume_name }}</div>
+        </div>
+        <div class="score-ring
+          {% if match.match_score >= 70 %}ring-high
+          {% elif match.match_score >= 40 %}ring-mid
+          {% else %}ring-low{% endif %}">
+          <svg viewBox="0 0 36 36">
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="currentColor" stroke-opacity="0.15" stroke-width="3"/>
+            <circle cx="18" cy="18" r="15.9" fill="none" stroke="currentColor" stroke-width="3"
+              stroke-dasharray="{{ match.match_score }}, 100"
+              stroke-linecap="round" transform="rotate(-90 18 18)"/>
+          </svg>
+          <span class="ring-label">{{ "%.0f"|format(match.match_score) }}%</span>
+        </div>
+      </div>
+
+      {% if details %}
+      <div class="match-breakdown">
+        <div class="breakdown-item">
+          <span class="breakdown-label">Skill Match</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ details.skill_score or 0 }}%"></div>
+          </div>
+          <span class="breakdown-val">{{ details.skill_score or 0 }}%</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Content Similarity</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ details.cosine_score or 0 }}%"></div>
+          </div>
+          <span class="breakdown-val">{{ details.cosine_score or 0 }}%</span>
+        </div>
+        <div class="breakdown-item">
+          <span class="breakdown-label">Keyword Density</span>
+          <div class="progress-bar">
+            <div class="progress-fill" style="width: {{ details.density_score or 0 }}%"></div>
+          </div>
+          <span class="breakdown-val">{{ details.density_score or 0 }}%</span>
+        </div>
+      </div>
+
+      {% if details.matched_skills %}
+      <div class="skill-section">
+        <div class="skill-section-title">✅ Matched Skills ({{ details.total_matched }}/{{ details.total_required }})</div>
+        <div class="skill-tags">
+          {% for s in details.matched_skills %}
+            <span class="skill-tag skill-match">{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+
+      {% if details.missing_skills %}
+      <div class="skill-section">
+        <div class="skill-section-title">❌ Missing Skills</div>
+        <div class="skill-tags">
+          {% for s in details.missing_skills %}
+            <span class="skill-tag skill-missing">{{ s }}</span>
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+      {% endif %}
+
+      <div class="match-card-footer">
+        Matched on {{ match.matched_at[:10] }}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+    <div class="empty-state large">
+      <div class="empty-icon">🎯</div>
+      <h3>No matches yet</h3>
+      <p>Go to your dashboard, upload a resume, and click a "Match" button against any job.</p>
+      <a href="{{ url_for('user_dashboard') }}" class="btn-primary">Go to Dashboard →</a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

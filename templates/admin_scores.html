@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% block title %}Candidate Scores{% endblock %}
+{% block content %}
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Candidate Scores</h1>
+      <p class="page-sub">All match results ranked by score</p>
+    </div>
+    <a href="{{ url_for('admin_dashboard') }}" class="btn-ghost">← Back</a>
+  </div>
+
+  {% if scores %}
+  <div class="table-card">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Candidate</th>
+          <th>Job</th>
+          <th>Company</th>
+          <th>Resume</th>
+          <th>Score</th>
+          <th>Date</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for score in scores %}
+        <tr>
+          <td>
+            {% if loop.index == 1 %}<span class="rank-gold">🥇</span>
+            {% elif loop.index == 2 %}<span class="rank-silver">🥈</span>
+            {% elif loop.index == 3 %}<span class="rank-bronze">🥉</span>
+            {% else %}{{ loop.index }}{% endif %}
+          </td>
+          <td>
+            <strong>{{ score.candidate_name }}</strong><br>
+            <small class="text-muted">{{ score.email }}</small>
+          </td>
+          <td>{{ score.job_title }}</td>
+          <td>{{ score.company or '—' }}</td>
+          <td><span class="file-badge">{{ score.resume_file[:20] }}{% if score.resume_file|length > 20 %}…{% endif %}</span></td>
+          <td>
+            <div class="score-pill
+              {% if score.match_score >= 70 %}score-pill-high
+              {% elif score.match_score >= 40 %}score-pill-mid
+              {% else %}score-pill-low{% endif %}">
+              {{ "%.1f"|format(score.match_score) }}%
+            </div>
+          </td>
+          <td>{{ score.matched_at[:10] }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <p>No scores yet. Candidates need to run matches against jobs.</p>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block content %}
+
+<div class="dashboard">
+  <div class="page-header">
+    <div>
+      <h1>Admin Dashboard 🛡️</h1>
+      <p class="page-sub">Manage users, jobs, and candidate scores</p>
+    </div>
+    <a href="{{ url_for('admin_jobs') }}" class="btn-primary">+ Add Job</a>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total_users }}</div>
+        <div class="stat-label">Total Candidates</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📄</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total_resumes }}</div>
+        <div class="stat-label">Resumes Uploaded</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">💼</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total_jobs }}</div>
+        <div class="stat-label">Job Openings</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🎯</div>
+      <div class="stat-body">
+        <div class="stat-value">{{ total_matches }}</div>
+        <div class="stat-label">Total Matches Run</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="dash-grid">
+    <!-- Recent Users -->
+    <div class="dash-section">
+      <h2 class="section-heading">
+        Recent Registrations
+        <a href="{{ url_for('admin_users') }}" class="view-all">Manage →</a>
+      </h2>
+      {% if recent_users %}
+      <table class="data-table">
+        <thead>
+          <tr><th>Name</th><th>Email</th><th>Joined</th></tr>
+        </thead>
+        <tbody>
+          {% for u in recent_users %}
+          <tr>
+            <td>{{ u.name }}</td>
+            <td>{{ u.email }}</td>
+            <td>{{ u.created_at[:10] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+        <div class="empty-state"><p>No candidates registered yet.</p></div>
+      {% endif %}
+    </div>
+
+    <!-- Top Candidates -->
+    <div class="dash-section">
+      <h2 class="section-heading">
+        Top Candidates
+        <a href="{{ url_for('admin_scores') }}" class="view-all">View All →</a>
+      </h2>
+      {% if top_candidates %}
+      <div class="leaderboard">
+        {% for i, cand in top_candidates | enumerate %}
+        <div class="leader-item">
+          <div class="leader-rank rank-{{ i+1 }}">{{ i+1 }}</div>
+          <div class="leader-info">
+            <div class="leader-name">{{ cand.name }}</div>
+            <div class="leader-email">{{ cand.email }}</div>
+          </div>
+          <div class="leader-score">{{ "%.1f"|format(cand.avg_score) }}%</div>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+        <div class="empty-state"><p>No match data yet.</p></div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Quick Links -->
+  <div class="admin-quick-links">
+    <a href="{{ url_for('admin_users') }}" class="quick-link-card">
+      <div class="ql-icon">👥</div>
+      <div class="ql-text">Manage Users</div>
+    </a>
+    <a href="{{ url_for('admin_jobs') }}" class="quick-link-card">
+      <div class="ql-icon">💼</div>
+      <div class="ql-text">Manage Jobs</div>
+    </a>
+    <a href="{{ url_for('admin_scores') }}" class="quick-link-card">
+      <div class="ql-icon">📊</div>
+      <div class="ql-text">View Scores</div>
+    </a>
+  </div>
+</div>
+
+{% endblock %}

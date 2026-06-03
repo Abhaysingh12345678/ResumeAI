@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+
+<section class="hero">
+  <div class="hero-bg-grid"></div>
+  <div class="hero-content">
+    <div class="hero-badge">AI-Powered Recruitment</div>
+    <h1 class="hero-title">
+      Screen Resumes<br>
+      <span class="gradient-text">Intelligently</span>
+    </h1>
+    <p class="hero-sub">
+      Upload resumes, match them against job descriptions using NLP,
+      and rank candidates automatically — all in one platform.
+    </p>
+    <div class="hero-actions">
+      <a href="{{ url_for('register') }}" class="btn-primary">Start Free →</a>
+      <a href="{{ url_for('login') }}" class="btn-ghost">Login</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat"><span class="stat-num">NLP</span><span class="stat-label">Powered Matching</span></div>
+      <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Skill Extraction</span></div>
+      <div class="stat"><span class="stat-num">∞</span><span class="stat-label">Resume Support</span></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="float-card card-1">
+      <div class="card-score">92%</div>
+      <div class="card-label">Match Score</div>
+    </div>
+    <div class="float-card card-2">
+      <div class="card-skills">🐍 Python &nbsp; 🤖 ML &nbsp; 🗄 SQL</div>
+      <div class="card-label">Extracted Skills</div>
+    </div>
+    <div class="float-card card-3">
+      <div class="card-rank">#1 Candidate</div>
+      <div class="card-label">Auto Ranked</div>
+    </div>
+  </div>
+</section>
+
+<section class="features">
+  <h2 class="section-title">Everything You Need</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📄</div>
+      <h3>Resume Parsing</h3>
+      <p>Extract text from PDF, DOCX, and TXT resumes automatically using advanced NLP pipelines.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🧠</div>
+      <h3>Skill Extraction</h3>
+      <p>Identify 100+ technical and soft skills using NLP keyword matching and pattern recognition.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎯</div>
+      <h3>Smart Matching</h3>
+      <p>TF-IDF cosine similarity + skill overlap scoring gives each resume a precise match percentage.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>Candidate Ranking</h3>
+      <p>Automatically rank and score all candidates for each job opening with detailed breakdowns.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3>Role-Based Access</h3>
+      <p>Separate dashboards for candidates and recruiters with secure authentication.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">⚡</div>
+      <h3>REST API</h3>
+      <p>Full API endpoints for integration with existing HR systems and tools.</p>
+    </div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <h2>Ready to automate your hiring?</h2>
+  <p>Join as a candidate or set up your recruiter account today.</p>
+  <a href="{{ url_for('register') }}" class="btn-primary">Create Account →</a>
+</section>
+
+{% endblock %}
